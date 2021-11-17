@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>ЛР-03</title>
+	<link rel="stylesheet" href="main.css">
+</head>
+<body class="body">
+	<header class="header">
+		<h3 class="main-title">Функціональне програмування</h3>
+	</header>
+
+<div class="dropup">
+<div class="dropbtn"></div>
+<div class="dropbtn"></div>
+<div class="dropbtn"></div>
+  <div class="dropup-content">
+  	<a href="index.html">Головна</a>
+    <a href="lab-01.html">ЛР-01</a>
+    <a href="lab-02.html">ЛР-02</a>
+    <a href="lab-03.html">ЛР-03</a>
+    <a href="#">ЛР-04</a>
+    <a href="lab-05.html">ЛР-05</a>
+  </div>
+
+<div class="main-page">
+	<h1 class="lab-01"><b>Лабораторна робота №3</b></h1>
+	
+	<p class="theme">
+	<b>Тема:</b>
+	Форми lambda та let, вираз присвоєння set! для розв’язання нелінійних рівнянь та чисельного інтегрування функцій</p>	
+
+	<p class="meta">
+	<b>Мета:</b>
+	Розв’язати нелінійні рівняння та здійснити чисельне інтегрування функцій наближеними методами, використовуючи мови функціонального програмування та lambda, let та set! форми</p>	
+	<div><b>Варіант:</b>
+	11</div>
+	<div class="tasks">
+	<p><b>Завдання:</b></p>
+	<p><b>11.1.</b>Знайти корені нелінійного рівняння виду:</p>
+	<img src="lab-03-11.1.jpg">
+	<p> Пошук наближеного значення хоча б одного кореня рівняння f(x) = 0 на відрізку [a; b] здійснювати методами хорд та перебором. Значення a, b інтервалу вибрати самостійно. Порівняти результати розв’язків двома методами</p>	
+	
+	<p><b>11.2</b> Написати процедури для обчислення інтеграла за формулами трапецій і Сімпсона. Порівняти результати обчислення.</p>
+	<img src="lab-03-11.2.jpg">
+	</div>	
+
+	<div class="structure">
+		<p class="struct-title"><b>Опис алгоритму для завдання 11.1: </b>
+		<img src="perebor.jpg">
+		<img src="secant.jpg">
+</p>
+
+<p class="struct-title"><b>Опис алгоритму  для завдання 11.2:</b>
+		<img src="simpson-method.jpg">
+		<img src="trapezoid-method.jpg">
+</p>
+</div>
+<! -- --> <div class="flow-chart">
+		<p><b>Структура програми (HIPPO діаграма):</b></p>
+		<img src="lab-03-HIPPO.png">
+	</div>
+	
+	<div class="language">
+		<p>
+			<b>Обгрунтування вибору середовища та мови</b>
+			<p>В якості середовища було обрано DrRacket версії 8.2 та мова Racket</p>
+			<p>Вибір середовища та мови був зумовлений наступним:
+			<li>DrRacket та мова Racket  мають хорошу документацію <a href="https://docs.racket-lang.org/" target="_blank">https://docs.racket-lang.org</a></li>
+			<li>дане середовище та мова були рекомендовані викладачем</li>
+  			</p>
+		</p>
+	</div>
+	<div>
+		 <p><b>Код програми:</b></p>
+		 <div class="code">
+		 	#lang racket<br>
+
+; #Task 11.1<br>
+<br>
+; Enumerative Method<br>
+<br>
+(define (Enumerative x step)<br>
+        (if (> (*(- (cos x) (* x x)) (+ x step)) 0)<br>
+        (Enumerative (+ x step) step)<br>
+        (list (+ x step))))<br>
+<br>
+; Secant Method<br>
+<br>
+(define (SecantMethod func start end step)<br>
+  (let ((xk (- start (/ (* (func start) (- end start)) (- (func end) (func start))))))<br>
+    (cond<br>
+      ((> step (abs(- (func xk) (func start))))<br>
+       xk)<br>
+      ((> 0(* (func xk) (func start)))<br>
+      (SecantMethod func start xk step))<br>
+    (else<br>
+     (SecantMethod func xk end step)))))<br>
+
+<br>
+(define (sum term start step stop)<br>
+(if (> start stop)<br>
+    0<br>
+    (+ (term start)<br>
+       (sum term (step start) step stop))))<br>
+
+<br>
+; Trapezoid Method<br>
+<br>
+(define (Trapezoid f a b n)<br>
+(define h (/ (- b a) n))<br>
+(define (next x) (+ x h))<br>
+  (* 0.5 h (+ (f a) (* 2 (sum f (+ a h) next (- b h))) (f b)))) ;trapezoid formula<br>
+
+<br>
+; Simpson`s Method<br>
+<br>
+
+(define (Simpson f start stop step)<br>
+(define h (/ (- stop start) step))<br>
+(define (next x) (+ x (* 2 h)))<br>
+  (* (/ h 3)<br>
+     (+ (f start)<br>
+        (* 4 (sum f (+ start h) next (- stop h)))<br>
+        (* 2 (sum f (+ start (* 2 h)) next (- stop (* 2 h))))<br>
+        (f stop)))) ; Simpson`s formula<br>
+        <br>
+<br>
+
+(display "\n#Task 11.1 Victoria Rimchuk, IPZ-43")<br>
+(newline)<br>
+(display "Enumerative Method: \t\t\n")<br>
+(Enumerative 0 0.0001)<br>
+(display "Secant Method \t\t\n")<br>
+(SecantMethod (lambda (x) (- (* x x) (sin x))) -1 1 0.0001)<br>
+
+(newline)<br>
+(display "Simpson`s method: \t")<br>
+(Simpson (lambda (x) (/ (cos x) (sqrt x) )) 0.1 2 10000)<br>
+(display "Trapezoid method: \t")<br>
+(Trapezoid (lambda (x) (/ (cos x) (sqrt x) )) 0.1 2 10000)<br>
+ </div>
+	</div>
+	<div class="screen">
+		<p><b>Скріншоти результатів:</b></p>
+		<img src="lab-03-results.jpg">
+	</div>
+	<div><p><b>Аналіз достовірності результатів:</b></p>
+		<p>11.1 Із представленого вище скріншота видно, що отримані результати починають відрізнятися з другої цифри після коми (хоча, для обох методів точність задана однакова 10^(-3)). 
+		Достовірність отриманих результатів було перевірено за допомогою онлайн калькулятора для розв'язку нелінійних рівнянь:</p>
+		<img src="analiz-rez-11.1.jpg">
+		<p>Проаналізувавши отримані результати можна зробити висновок, що результат, отриманий за допомогою методу перебору є більш точним,  ніж результат, отриманий методом хорд, оскільки, співпадає з результатом онлайн калькулятора до 4 цифри після коми, згідно заданої точності 10^(-3), в той час, як результат, отриманий методом хорд співпадає тільки до 1 цифри після коми.</p>
+		<p>11.2 Із представленого вище скріншота з результатами роботи програми видно, що отримані результати практично однакові. 
+		Достовірність отриманих результатів було перевірено за допомогою онлайн калькулятора для обчислення інтегралу: </p>
+		<img src="analiz-rez-11.2(1).jpg"><br>
+		<img src="analiz-rez-11.2(2).jpg">
+		<p>
+	Проаналізувавши отримані результати можна зробити висновок, що, отримані обома методами результати починають відрізнятися тільки з четвертої цифри після коми (це залежить від заданої точності). Тобто, звідси можна зробити висновок, що реалізовані в рамках роботи методи для обчислення інтегралу мають досить високу точність.</p>
+		
+	</div>
+	<div class="conclusions">
+	<p><b>Висновки:</b></p>
+	<p>В ході виконання даної лабораторної роботи було розв’язківязано нелінійні рівняння та здійснено чисельне інтегрування функцій наближеними методами, використовуючи мови функціонального програмування та lambda, let та set! форми на прикладі виконання наступних завдань: <br> 
+		<li>Знаходження коренів нелінійного рівняння за допомогою пошуку наближеного значення хоча б одного кореня рівняння f(x) = 0 на відрізку [a; b] за допомогою методів хорд та перебору </li>
+		<li>В результаті виконання даної програми було встановлено, що отримані результати починають відрізнятися з другої цифри після коми (хоча, для обох методів точність задана однакова 10^(-3)</li>
+		
+		<li> Написання процедури для обчислення інтеграла за формулами трапецій і Сімпсона. Порівняно результати обчислення. </li>
+
+	</p>
+</div>
+</div>
+</body>
+</html>
