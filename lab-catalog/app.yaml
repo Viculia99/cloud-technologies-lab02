@@ -1,4 +1,4 @@
-runtime: javascript
+runtime: html
 env: flex
 
 manual_scaling:
